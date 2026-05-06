@@ -419,9 +419,11 @@ It consists of three key stages:
 ## 🎯 Stage 1 — Feature Extraction
 
 A pre-trained self-supervised backbone, **SimDINOv2**, is used to encode driving scene images and generate robust global visual representations.
+
 <div align="center">
-  <img src=" https://github.com/peng86584-commits/GAZELOOM/blob/main/fig2.png?raw=true" width="720" />
+  <img src="https://github.com/peng86584-commits/GAZELOOM/blob/main/fig2.png?raw=true" width="720" />
 </div>
+
 
 To enhance semantic understanding and spatial perception, GazeLoom incorporates multiple auxiliary cues:
 
