@@ -86,6 +86,50 @@ python data_prep/preprocess_goo_real.py \
 ---
 
 After preprocessing, each dataset directory will contain JSON annotation files that can be directly used for **GazeLoom training and evaluation**.
+## 🌊 Depth Map Extraction
+
+GazeLoom uses **Depth Anything V2** to generate monocular depth maps as geometric guidance.
+
+### Pretrained Weights
+
+Download official Depth Anything V2 checkpoints:
+
+| Model | Checkpoint |
+|---|---|
+| Depth-Anything-V2-Small | [Download](https://huggingface.co/depth-anything/Depth-Anything-V2-Small) |
+| Depth-Anything-V2-Base | [Download](https://huggingface.co/depth-anything/Depth-Anything-V2-Base) |
+| Depth-Anything-V2-Large | [Download](https://huggingface.co/depth-anything/Depth-Anything-V2-Large) |
+
+Place the downloaded checkpoint under:
+
+```text
+checkpoints/
+└── depth_anything_v2_vitl.pth
+```
+
+### Extract Depth Maps
+
+```bash
+python depthany/depth.py \
+  --img_path /path/to/images \
+  --outdir /path/to/depth \
+  --encoder vitl \
+  --checkpoint checkpoints/depth_anything_v2_vitl.pth \
+  --input_size 518 \
+  --grayscale
+```
+
+For GazeLoom datasets, the generated depth maps should preserve the same relative image paths:
+
+```text
+dataset_root/
+├── gazefollow/
+│   └── xxx.jpg
+├── videoattentiontarget/
+│   └── xxx.jpg
+└── depth/
+    └── xxx.png
+```
 
 
 ## 📸 Visuals
