@@ -36,42 +36,56 @@ It leverages **multi-modal geometric guidance** and **self-supervised feature ex
 
 ---
 
-
 ## 🗂️ Data Processing
 
 Before training or evaluation, please download the required datasets and run the corresponding preprocessing scripts.
 
-The preprocessing scripts compile raw annotations into unified JSON files for each split, including head bounding boxes, gaze points, in/out labels, and metadata required by GazeLoom.
+The preprocessing scripts convert raw annotations into a unified JSON format for each split, including **head bounding boxes**, **gaze points**, **in/out labels**, and metadata required by GazeLoom.
 
-### GazeFollow
+<div align="center">
 
-Download the GazeFollow dataset [here](https://github.com/ejcgt/attention-target-detection?tab=readme-ov-file#dataset).
+| Dataset | Download | Preprocessing Script |
+|:---:|:---:|:---:|
+| 👀 **GazeFollow** | [Download](https://github.com/ejcgt/attention-target-detection?tab=readme-ov-file#dataset) | `data_prep/preprocess_gazefollow.py` |
+| 🎥 **VideoAttentionTarget** | [Download](https://github.com/ejcgt/attention-target-detection?tab=readme-ov-file#dataset-1) | `data_prep/preprocess_vat.py` |
+| 🧒 **ChildPlay** | [Download](https://www.idiap.ch/en/scientific-research/data/childplay-gaze) | `data_prep/preprocess_childplay.py` |
+| 🛒 **GOO-Real** | [Download](https://github.com/upeee/GOO-GAZE2021/blob/main/dataset/gooreal-download.txt) | `data_prep/preprocess_goo_real.py` |
 
+</div>
 
+---
+
+### 👀 GazeFollow
+
+```bash
 python data_prep/preprocess_gazefollow.py \
   --data_path /path/to/gazefollow/data_new
-### VideoAttentionTarget
+```
 
-Download the VideoAttentionTarget dataset [here](https://github.com/ejcgt/attention-target-detection?tab=readme-ov-file#dataset-1).
+### 🎥 VideoAttentionTarget
 
-
+```bash
 python data_prep/preprocess_vat.py \
   --data_path /path/to/videoattentiontarget
+```
 
-### ChildPlay
+### 🧒 ChildPlay
 
-Download the ChildPlay dataset [here](https://www.idiap.ch/en/scientific-research/data/childplay-gaze).
-
-
+```bash
 python data_prep/preprocess_childplay.py \
   --data_path /path/to/childplay
-### GOO-Real
+```
 
-Download the GOO-Real dataset [here](https://github.com/upeee/GOO-GAZE2021/blob/main/dataset/gooreal-download.txt).
+### 🛒 GOO-Real
 
-
+```bash
 python data_prep/preprocess_goo_real.py \
   --data_path /path/to/goo_real
+```
+
+---
+
+After preprocessing, each dataset directory will contain JSON annotation files that can be directly used for **GazeLoom training and evaluation**.
 
 
 ## 📸 Visuals
