@@ -496,7 +496,7 @@ The entire model is trained using a multi-task joint optimization framework, imp
 ### 🔗 CGF — Cross-modal Gating Fusion
 
 <div align="center">
-  <img src="https://github.com/peng86584-commits/GAZELOOM/blob/main/fig4.png?raw=true" width="520" />
+  <img src="https://github.com/peng86584-commits/GAZELOOM/blob/main/fig4.png?raw=true" width="480" />
 </div>
 
 
