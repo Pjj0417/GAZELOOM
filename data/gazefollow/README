@@ -1,0 +1,33 @@
+This is an extended version of annotations that have been made (by Chong et al. ECCV 2018), based on the MIT GazeFollow dataset (Recasens et al. NIPS 2015).
+
+It provides additional labels for whether the gaze target lies within image frame or outside the frame for each training image.
+Test images are all considered inside cases.
+Additionally, it also provides the head bounding box coordinates as they were not included in the original MIT GazeFollow annotations.
+All the other fields (image, body, eyes, gaze, source info) are directly copied from the MIT GazeFollow data without alteration.
+
+
+Train split
+  Format:
+  [image_path,id,body_bbox_x,body_bbox_y,body_bbox_width,body_bbox_height,eye_x,eye_y,gaze_x,gaze_y,head_bbox_x_min,head_bbox_y_min,head_bbox_x_max,head_bbox_y_max,in_or_out,meta]
+
+  Description:
+  <head_bbox_x_min,head_bbox_y_min,head_bbox_x_max,head_bbox_y_max,in_or_out> are the added fields to GazeFollow.
+  Head bounding box <head_bbox_x_min,head_bbox_y_min,head_bbox_x_max,head_bbox_y_max> is in the image pixel coordinate.
+  <in_or_out> is 1 for inside, 0 for outside cases. There are a few -1's to denote invalid case (e.g., no human at all, upper body is cut, etc).
+
+
+Test split
+  Format:
+  [image_path,id,body_bbox_x,body_bbox_y,body_bbox_width,body_bbox_height,eye_x,eye_y,gaze_x,gaze_y,head_bbox_x_min,head_bbox_y_min,head_bbox_x_max,head_bbox_y_max,meta]
+
+  Description:
+  <head_bbox_x_min,head_bbox_y_min,head_bbox_x_max,head_bbox_y_max> are the added fields to GazeFollow.
+  Head bounding box <head_bbox_x_min,head_bbox_y_min,head_bbox_x_max,head_bbox_y_max> is in the image pixel coordinate.
+
+  Note:
+  Each test image has been annotated multiple times by different people.
+  There is no <in_or_out> field since all images are considered inside cases.
+
+
+
+Contact Eunji Chong (eunjichong@gatech.edu) if you have any questions.
