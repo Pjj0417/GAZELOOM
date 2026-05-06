@@ -267,6 +267,94 @@ output/
 ├── image_overlay_0.jpg
 └── gaze_predictions.json
 ```
+## 🧪 Evaluation
+
+We provide evaluation scripts in `scripts/` to validate GazeLoom on standard gaze-target benchmarks.
+
+Before evaluation, please make sure that:
+
+- 📥 The dataset has been downloaded.
+- 🗂️ The preprocessing script has been executed.
+- 🌊 Depth maps have been generated if the model uses geometry guidance.
+- 📦 The pretrained checkpoint has been downloaded.
+
+---
+
+### 👀 GazeFollow
+
+Evaluate GazeLoom on the GazeFollow test split:
+
+```bash
+python scripts/eval_gazefollow.py \
+  --data_path /path/to/gazefollow/data_new \
+  --model_name gazeloom_cgf_simdinov2_vitl14 \
+  --ckpt_path /path/to/checkpoint.pt \
+  --batch_size 128
+```
+
+The script reports:
+
+| Metric | Description |
+|---|---|
+| **AUC ↑** | Area under the gaze heatmap ROC curve |
+| **Avg L2 ↓** | Average L2 distance between prediction and ground-truth gaze points |
+| **Min L2 ↓** | Minimum L2 distance to the closest ground-truth annotation |
+
+---
+
+### 🎥 VideoAttentionTarget
+
+Evaluate GazeLoom on VideoAttentionTarget:
+
+```bash
+python scripts/eval_vat.py \
+  --data_path /path/to/videoattentiontarget \
+  --model_name gazeloom_cgf_simdinov2_vitl14_inout \
+  --ckpt_path /path/to/checkpoint.pt \
+  --batch_size 64
+```
+
+For VideoAttentionTarget, the `_inout` model is recommended because the dataset includes both in-frame and out-of-frame gaze targets.
+
+---
+
+### 🧒 ChildPlay
+
+Evaluate GazeLoom on ChildPlay:
+
+```bash
+python scripts/eval_childplay.py \
+  --data_path /path/to/childplay \
+  --model_name gazeloom_cgf_simdinov2_vitl14_inout \
+  --ckpt_path /path/to/checkpoint.pt \
+  --batch_size 64
+```
+
+---
+
+### 🛒 GOO-Real
+
+Evaluate GazeLoom on GOO-Real:
+
+```bash
+python scripts/eval_goo_real.py \
+  --data_path /path/to/goo_real \
+  --model_name gazeloom_cgf_simdinov2_vitl14 \
+  --ckpt_path /path/to/checkpoint.pt \
+  --batch_size 64
+```
+
+---
+
+### 📊 Example Output
+
+```text
+Running on cuda
+Evaluating: 100%|████████████████████| 100/100
+AUC: 0.967
+Avg L2: 0.112
+Min L2: 0.079
+```
 
 The generated visualizations can be used to inspect gaze direction, predicted attention targets, and model behavior under different driving scenarios.
 
