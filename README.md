@@ -47,7 +47,7 @@ The preprocessing scripts compile raw annotations into unified JSON files for ea
 
 Download the GazeFollow dataset [here](https://github.com/ejcgt/attention-target-detection?tab=readme-ov-file#dataset).
 
-```bash
+
 python data_prep/preprocess_gazefollow.py \
   --data_path /path/to/gazefollow/data_new
 
