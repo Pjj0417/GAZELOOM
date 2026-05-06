@@ -467,10 +467,11 @@ The entire model is trained using a multi-task joint optimization framework, imp
 ## 🔍 Module Details
 
 ### 🧩 MGG — Multi-modal Geometry Guidance
-
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/1d75adaa-3f3c-4131-9506-0fcd5337c5ba" width="720" />
+  <img src="https://github.com/peng86584-commits/GAZELOOM/blob/main/fig3.png?raw=true" width="720" />
 </div>
+
+
 
 **MGG** integrates geometric priors from multiple modalities to enhance robustness under complex driving conditions.
 
