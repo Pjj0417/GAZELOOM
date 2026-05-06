@@ -58,6 +58,13 @@ Download the VideoAttentionTarget dataset [here](https://github.com/ejcgt/attent
 python data_prep/preprocess_vat.py \
   --data_path /path/to/videoattentiontarget
 
+### ChildPlay
+
+Download the ChildPlay dataset [here](https://www.idiap.ch/en/scientific-research/data/childplay-gaze).
+
+
+python data_prep/preprocess_childplay.py \
+  --data_path /path/to/childplay
 
 ## 📸 Visuals
 
