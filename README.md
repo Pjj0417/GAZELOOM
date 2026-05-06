@@ -17,7 +17,7 @@ A lightweight and robust driver gaze estimation system powered by self-supervise
 </div>
 
 ## 🚀 About
-# ![output_viz3-ezgif com-video-to-gif-converter (1)](https://github.com/user-attachments/assets/3f2dc547-ade5-4530-8f45-9b555ceeeb4f)
+
 **GAZELOOM** is a driver gaze estimation framework designed for intelligent traffic safety and human-vehicle interaction.  
 By leveraging **multi-modal geometric guidance** and **self-supervised feature extraction**, it accurately predicts driver gaze points in 3D space.
 
