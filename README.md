@@ -130,6 +130,95 @@ dataset_root/
 └── depth/
     └── xxx.png
 ```
+## 🏋️ Train
+
+We provide training scripts in `scripts/` for training GazeLoom with the **SimDINOv2** backbone.
+
+Before running the training script, please:
+
+- 📥 Download the dataset and run the preprocessing script following the [Data Processing](#data-processing) section.
+- 🌊 Prepare the extracted depth maps if geometry-guided training is enabled.
+- 📊 Optionally install `wandb` for metric logging:
+
+```bash
+pip install wandb
+```
+
+By default, checkpoints are saved to `./experiments`.  
+You can use `--ckpt_save_dir` to customize the checkpoint directory.
+
+---
+
+### 👀 GazeFollow
+
+Train GazeLoom with the **SimDINOv2 ViT-B/14** backbone:
+
+```bash
+python scripts/train_gazefollow.py \
+  --data_path /path/to/gazefollow/data_new \
+  --model gazeloom_cgf_simdinov2_vitb14_inout \
+  --exp_name train_gazeloom_simdinov2_vitb14_gazefollow \
+  --batch_size 48 \
+  --max_epochs 30 \
+  --lr 5e-4
+```
+
+Train GazeLoom with the **SimDINOv2 ViT-L/14** backbone:
+
+```bash
+python scripts/train_gazefollow.py \
+  --data_path /path/to/gazefollow/data_new \
+  --model gazeloom_cgf_simdinov2_vitl14_inout \
+  --exp_name train_gazeloom_simdinov2_vitl14_gazefollow \
+  --batch_size 32 \
+  --max_epochs 30 \
+  --lr 5e-4
+```
+
+---
+
+### 🔁 Resume Training
+
+Resume training from a saved checkpoint:
+
+```bash
+python scripts/train_gazefollow.py \
+  --data_path /path/to/gazefollow/data_new \
+  --model gazeloom_cgf_simdinov2_vitb14_inout \
+  --resume /path/to/checkpoint.pt \
+  --exp_name resume_gazeloom_simdinov2_vitb14
+```
+
+---
+
+### 🔓 Backbone Fine-tuning
+
+By default, the backbone is frozen.  
+To fine-tune the last several SimDINOv2 transformer blocks, use `--unfreeze_layers`:
+
+```bash
+python scripts/train_gazefollow.py \
+  --data_path /path/to/gazefollow/data_new \
+  --model gazeloom_cgf_simdinov2_vitb14_inout \
+  --unfreeze_layers 2 \
+  --exp_name finetune_gazeloom_simdinov2_vitb14
+```
+
+---
+
+### ⚙️ Main Arguments
+
+| Argument | Description |
+|---|---|
+| `--model` | Model name, e.g. `gazeloom_cgf_simdinov2_vitb14_inout` |
+| `--data_path` | Path to the preprocessed dataset |
+| `--ckpt_save_dir` | Directory for saving checkpoints |
+| `--exp_name` | Experiment name |
+| `--batch_size` | Training batch size |
+| `--max_epochs` | Number of training epochs |
+| `--lr` | Learning rate for trainable heads |
+| `--resume` | Path to checkpoint for resuming training |
+| `--unfreeze_layers` | Number of final backbone layers to fine-tune |
 
 ## 🎨 Visualization
 
