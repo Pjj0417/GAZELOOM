@@ -467,6 +467,7 @@ The entire model is trained using a multi-task joint optimization framework, imp
 ## 🔍 Module Details
 
 ### 🧩 MGG — Multi-modal Geometry Guidance
+
 <div align="center">
   <img src="https://github.com/peng86584-commits/GAZELOOM/blob/main/fig3.png?raw=true" width="720" />
 </div>
