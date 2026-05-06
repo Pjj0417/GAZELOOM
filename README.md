@@ -522,7 +522,7 @@ The entire model is trained using a multi-task joint optimization framework, imp
 ## 🧠 Architecture Overview
 
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/acd7deab-6800-4aa1-a8d5-e065729dd186" width="820" />
+  <img src="https://github.com/user-attachments/assets/acd7deab-6800-4aa1-a8d5-e065729dd186" width="850" />
 </div>
 
 The GazeLoom architecture estimates 3D driver gaze points through the following pipeline:
