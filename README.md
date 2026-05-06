@@ -550,3 +550,86 @@ Clone the repository:
 ```bash
 git clone https://github.com/yourname/GAZELOOM.git
 cd GAZELOOM
+
+
+## 🔁 Reproducibility
+
+To facilitate reproducibility, we provide the training seeds, hyperparameters, optimizer settings, and learning-rate schedules used in our experiments.
+
+> ⚠️ Due to hardware differences, CUDA/cuDNN behavior, and dataloader randomness, exact numerical results may slightly vary across different environments.
+
+### 🧪 Training Environment
+
+| Item | Configuration |
+|---|---|
+| 🧠 Framework | PyTorch 2.2.0 |
+| ⚙️ CUDA | CUDA 12.1 |
+| 🖥️ GPU | NVIDIA GPU |
+| 📦 Backbone | SimDINOv2 |
+| 📐 Input Size | `448 × 448` |
+| 🔥 Heatmap Size | `64 × 64` |
+
+### 🎲 Random Seeds
+
+All experiments are initialized with fixed random seeds:
+
+```python
+random.seed(0)
+np.random.seed(0)
+torch.manual_seed(0)
+torch.cuda.manual_seed_all(0)
+```
+
+### ⚙️ Default Training Configuration
+
+| Setting | Value |
+|---|---:|
+| Optimizer | Adam |
+| Batch Size | 48 |
+| Max Epochs | 30 |
+| Base Learning Rate | `5e-4` |
+| Backbone Learning Rate | `1e-5` |
+| Scheduler | CosineAnnealingLR |
+| Minimum LR | `1e-7` |
+| Weight Decay | Not used by default |
+| Backbone | Frozen by default |
+| Drop Path | `0.1` |
+| CGF Groups | `8` |
+
+### 📊 Dataset-specific Schedule
+
+| Dataset | Initialization | Epochs | Model |
+|---|---|---:|---|
+| 👀 GazeFollow | From SimDINOv2 backbone | 30 | `gazeloom_cgf_simdinov2_vitb14_inout` |
+| 🎥 VideoAttentionTarget | Fine-tuned from GazeFollow checkpoint | 8 | `gazeloom_cgf_simdinov2_vitb14_inout` |
+| 🧒 ChildPlay | Fine-tuned from GazeFollow checkpoint | 3 | `gazeloom_cgf_simdinov2_vitb14_inout` |
+| 🛒 GOO-Real | Fine-tuned from GazeFollow checkpoint | 3 | `gazeloom_cgf_simdinov2_vitb14` |
+
+### 🔓 Backbone Fine-tuning
+
+By default, the SimDINOv2 backbone is frozen.  
+If needed, the last `N` Transformer blocks can be unfrozen using:
+
+```bash
+--unfreeze_layers N
+```
+
+For example:
+
+```bash
+python scripts/train_gazefollow.py \
+  --data_path /path/to/gazefollow/data_new \
+  --model gazeloom_cgf_simdinov2_vitb14_inout \
+  --batch_size 48 \
+  --max_epochs 30 \
+  --lr 5e-4 \
+  --unfreeze_layers 0
+```
+
+### 📝 Notes
+
+- The reported results are obtained using the configuration above.
+- Checkpoints are saved after each epoch under `./experiments`.
+- Training can be resumed with `--resume /path/to/checkpoint.pt`.
+- Small performance variations may occur due to GPU type, CUDA kernels, and multi-worker dataloading.
+
