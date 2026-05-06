@@ -35,6 +35,22 @@ It leverages **multi-modal geometric guidance** and **self-supervised feature ex
 - 🚀 **ONNX Deployment** — Run `onnx.py` to export and deploy GazeLoom in ONNX format. Google Drive: [Download](https://drive.google.com/file/d/1xLQqY6gnw76jP0Xy6-sLKM07R0hgFBw8/view?usp=drive_link)
 
 ---
+---
+
+## 🗂️ Data Processing
+
+Before training or evaluation, please download the required datasets and run the corresponding preprocessing scripts.
+
+The preprocessing scripts compile raw annotations into unified JSON files for each split, including head bounding boxes, gaze points, in/out labels, and metadata required by GazeLoom.
+
+### GazeFollow
+
+Download the GazeFollow dataset [here](https://github.com/ejcgt/attention-target-detection?tab=readme-ov-file#dataset).
+
+```bash
+python data_prep/preprocess_gazefollow.py \
+  --data_path /path/to/gazefollow/data_new
+
 
 ## 📸 Visuals
 
