@@ -65,6 +65,13 @@ Download the ChildPlay dataset [here](https://www.idiap.ch/en/scientific-researc
 
 python data_prep/preprocess_childplay.py \
   --data_path /path/to/childplay
+### GOO-Real
+
+Download the GOO-Real dataset [here](https://github.com/upeee/GOO-GAZE2021/blob/main/dataset/gooreal-download.txt).
+
+
+python data_prep/preprocess_goo_real.py \
+  --data_path /path/to/goo_real
 
 ## 📸 Visuals
 
