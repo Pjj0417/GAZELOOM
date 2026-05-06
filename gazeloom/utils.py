@@ -1,231 +1,443 @@
-import torch
-from PIL import Image, ImageDraw
-import numpy as np
-import matplotlib.pyplot as plt
-import torchvision
 import random
+from typing import List, Sequence, Tuple, Union
+
+import numpy as np
+import torch
+import torchvision.transforms.functional as TF
+from PIL import Image, ImageDraw
 from sklearn.metrics import roc_auc_score
 
-def repeat_tensors(tensor, repeat_counts):
-    repeated_tensors = [tensor[i:i+1].repeat(repeat, *[1] * (tensor.ndim - 1)) for i, repeat in enumerate(repeat_counts)]
-    return torch.cat(repeated_tensors, dim=0)
 
-def split_tensors(tensor, split_counts):
-    indices = torch.cumsum(torch.tensor([0] + split_counts), dim=0)
-    return [tensor[indices[i]:indices[i+1]] for i in range(len(split_counts))]
+Tensor = torch.Tensor
+BBox = Sequence[float]
 
-def visualize_heatmap(pil_image, heatmap, bbox=None):
+
+def repeat_tensors(tensor: Tensor, repeat_counts: Sequence[int]) -> Tensor:
+    repeated = [
+        tensor[i : i + 1].repeat(repeat, *([1] * (tensor.ndim - 1)))
+        for i, repeat in enumerate(repeat_counts)
+    ]
+    return torch.cat(repeated, dim=0)
+
+
+def split_tensors(tensor: Tensor, split_counts: Sequence[int]) -> List[Tensor]:
+    indices = torch.cumsum(
+        torch.tensor([0] + list(split_counts), device=tensor.device),
+        dim=0,
+    )
+    return [
+        tensor[indices[i] : indices[i + 1]]
+        for i in range(len(split_counts))
+    ]
+
+
+def stack_and_pad(tensor_list: Sequence[Tensor]) -> Tensor:
+    if len(tensor_list) == 0:
+        raise ValueError("tensor_list must not be empty.")
+
+    max_size = max(t.shape[0] for t in tensor_list)
+    padded_list = []
+
+    for tensor in tensor_list:
+        if tensor.shape[0] == max_size:
+            padded_list.append(tensor)
+            continue
+
+        pad_shape = (max_size - tensor.shape[0], *tensor.shape[1:])
+        padding = torch.zeros(
+            pad_shape,
+            dtype=tensor.dtype,
+            device=tensor.device,
+        )
+        padded_list.append(torch.cat([tensor, padding], dim=0))
+
+    return torch.stack(padded_list, dim=0)
+
+
+def visualize_heatmap(
+    pil_image: Image.Image,
+    heatmap: Union[Tensor, np.ndarray],
+    bbox: BBox = None,
+    alpha: int = 128,
+) -> Image.Image:
     if isinstance(heatmap, torch.Tensor):
         heatmap = heatmap.detach().cpu().numpy()
-    heatmap = Image.fromarray((heatmap * 255).astype(np.uint8)).resize(pil_image.size, Image.Resampling.BILINEAR)
-    heatmap = plt.cm.jet(np.array(heatmap) / 255.)
-    heatmap = (heatmap[:, :, :3] * 255).astype(np.uint8)
-    heatmap = Image.fromarray(heatmap).convert("RGBA")
-    heatmap.putalpha(128)
-    overlay_image = Image.alpha_composite(pil_image.convert("RGBA"), heatmap)
+
+    heatmap = np.asarray(heatmap)
+    heatmap = np.clip(heatmap, 0.0, 1.0)
+
+    heatmap_img = Image.fromarray((heatmap * 255).astype(np.uint8))
+    heatmap_img = heatmap_img.resize(pil_image.size, Image.Resampling.BILINEAR)
+
+    import matplotlib.pyplot as plt
+
+    heatmap_color = plt.cm.jet(np.asarray(heatmap_img) / 255.0)
+    heatmap_color = (heatmap_color[:, :, :3] * 255).astype(np.uint8)
+
+    overlay = Image.fromarray(heatmap_color).convert("RGBA")
+    overlay.putalpha(alpha)
+
+    output = Image.alpha_composite(pil_image.convert("RGBA"), overlay)
 
     if bbox is not None:
         width, height = pil_image.size
         xmin, ymin, xmax, ymax = bbox
-        draw = ImageDraw.Draw(overlay_image)
-        draw.rectangle([xmin * width, ymin * height, xmax * width, ymax * height], outline="green", width=3)
-    return overlay_image
 
-def stack_and_pad(tensor_list):
-    max_size = max([t.shape[0] for t in tensor_list])
-    padded_list = []
-    for t in tensor_list:
-        if t.shape[0] == max_size:
-            padded_list.append(t)
-        else:
-            padded_list.append(torch.cat([t, torch.zeros(max_size - t.shape[0], *t.shape[1:])], dim=0))
-    return torch.stack(padded_list)
+        draw = ImageDraw.Draw(output)
+        draw.rectangle(
+            [
+                xmin * width,
+                ymin * height,
+                xmax * width,
+                ymax * height,
+            ],
+            outline="green",
+            width=3,
+        )
 
-def random_crop(img, bbox, gazex, gazey, inout):
-    width, height = img.size
+    return output
+
+
+def random_crop(
+    image: Image.Image,
+    bbox: BBox,
+    gazex: Sequence[float],
+    gazey: Sequence[float],
+    inout: int,
+):
+    width, height = image.size
     bbox_xmin, bbox_ymin, bbox_xmax, bbox_ymax = bbox
-    # determine feasible crop region (must include bbox and gaze target)
-    crop_reg_xmin = min(bbox_xmin, min(gazex)) if inout else bbox_xmin
-    crop_reg_ymin = min(bbox_ymin, min(gazey)) if inout else bbox_ymin
-    crop_reg_xmax = max(bbox_xmax, max(gazex)) if inout else bbox_xmax
-    crop_reg_ymax = max(bbox_ymax, max(gazey)) if inout else bbox_ymax
 
-    try:
-        xmin = random.randint(0, int(crop_reg_xmin))
-        ymin = random.randint(0, int(crop_reg_ymin))
-        xmax = random.randint(int(crop_reg_xmax), width)
-        ymax = random.randint(int(crop_reg_ymax), height)
-    except:
-        import pdb; pdb.set_trace()
+    if inout:
+        crop_xmin = min(bbox_xmin, min(gazex))
+        crop_ymin = min(bbox_ymin, min(gazey))
+        crop_xmax = max(bbox_xmax, max(gazex))
+        crop_ymax = max(bbox_ymax, max(gazey))
+    else:
+        crop_xmin = bbox_xmin
+        crop_ymin = bbox_ymin
+        crop_xmax = bbox_xmax
+        crop_ymax = bbox_ymax
 
-    img = torchvision.transforms.functional.crop(img, ymin, xmin, ymax - ymin, xmax - xmin)
-    bbox = [bbox_xmin - xmin, bbox_ymin - ymin, bbox_xmax - xmin, bbox_ymax - ymin]
-    gazex = [x - xmin for x in gazex]
-    gazey = [y - ymin for y in gazey]
+    crop_xmin = max(0, int(crop_xmin))
+    crop_ymin = max(0, int(crop_ymin))
+    crop_xmax = min(width, int(crop_xmax))
+    crop_ymax = min(height, int(crop_ymax))
 
-    return img, bbox, gazex, gazey
+    left = random.randint(0, crop_xmin)
+    top = random.randint(0, crop_ymin)
+    right = random.randint(crop_xmax, width)
+    bottom = random.randint(crop_ymax, height)
 
-def horiz_flip(img, bbox, gazex, gazey, inout):
-    width, height = img.size
-    img = torchvision.transforms.functional.hflip(img)
+    image = TF.crop(image, top, left, bottom - top, right - left)
+
+    bbox = [
+        bbox_xmin - left,
+        bbox_ymin - top,
+        bbox_xmax - left,
+        bbox_ymax - top,
+    ]
+
+    gazex = [x - left for x in gazex]
+    gazey = [y - top for y in gazey]
+
+    return image, bbox, gazex, gazey
+
+
+def horiz_flip(
+    image: Image.Image,
+    bbox: BBox,
+    gazex: Sequence[float],
+    gazey: Sequence[float],
+    inout: int,
+):
+    width, _ = image.size
+    image = TF.hflip(image)
+
     xmin, ymin, xmax, ymax = bbox
     bbox = [width - xmax, ymin, width - xmin, ymax]
+
     if inout:
         gazex = [width - x for x in gazex]
-    return img, bbox, gazex, gazey
 
-def random_bbox_jitter(img, bbox):
-    width, height = img.size
+    return image, bbox, gazex, gazey
+
+
+def random_bbox_jitter(
+    image: Image.Image,
+    bbox: BBox,
+    jitter: float = 0.2,
+) -> List[float]:
+    width, height = image.size
     xmin, ymin, xmax, ymax = bbox
-    jitter = 0.2
-    xmin_j = (np.random.random_sample() * (jitter*2) - jitter) * (xmax - xmin)
-    xmax_j = (np.random.random_sample() * (jitter*2) - jitter) * (xmax - xmin)
-    ymin_j = (np.random.random_sample() * (jitter*2) - jitter) * (ymax - ymin)
-    ymax_j = (np.random.random_sample() * (jitter*2) - jitter) * (ymax - ymin)
 
-    bbox = [max(0, xmin_j + xmin), max(0, ymin_j + ymin), min(width, xmax_j + xmax), min(height, ymax_j + ymax)]
+    box_w = xmax - xmin
+    box_h = ymax - ymin
 
-    return bbox
+    xmin_j = (np.random.random_sample() * 2.0 - 1.0) * jitter * box_w
+    xmax_j = (np.random.random_sample() * 2.0 - 1.0) * jitter * box_w
+    ymin_j = (np.random.random_sample() * 2.0 - 1.0) * jitter * box_h
+    ymax_j = (np.random.random_sample() * 2.0 - 1.0) * jitter * box_h
 
-def get_heatmap(gazex, gazey, height, width, sigma=3, htype="Gaussian"):
-    # Adapted from https://github.com/ejcgt/attention-target-detection/blob/master/utils/imutils.py
+    return [
+        max(0.0, xmin + xmin_j),
+        max(0.0, ymin + ymin_j),
+        min(float(width), xmax + xmax_j),
+        min(float(height), ymax + ymax_j),
+    ]
 
-    img = torch.zeros(height, width)
-    if gazex < 0 or gazey < 0:  # return empty map if out of frame
-        return img
+
+def get_heatmap(
+    gazex: float,
+    gazey: float,
+    height: int,
+    width: int,
+    sigma: int = 3,
+    htype: str = "Gaussian",
+) -> Tensor:
+    heatmap = torch.zeros(height, width)
+
+    if gazex < 0 or gazey < 0:
+        return heatmap
+
     gazex = int(gazex * width)
     gazey = int(gazey * height)
 
-    # Check that any part of the gaussian is in-bounds
     ul = [int(gazex - 3 * sigma), int(gazey - 3 * sigma)]
     br = [int(gazex + 3 * sigma + 1), int(gazey + 3 * sigma + 1)]
-    if ul[0] >= img.shape[1] or ul[1] >= img.shape[0] or br[0] < 0 or br[1] < 0:
-        # If not, just return the image as is
-        return img
 
-    # Generate gaussian
+    if (
+        ul[0] >= width
+        or ul[1] >= height
+        or br[0] < 0
+        or br[1] < 0
+    ):
+        return heatmap
+
     size = 6 * sigma + 1
     x = np.arange(0, size, 1, float)
     y = x[:, np.newaxis]
-    x0 = y0 = size // 2
-    # The gaussian is not normalized, we want the center value to equal 1
+    x0 = size // 2
+    y0 = size // 2
+
     if htype == "Gaussian":
-        g = np.exp(-((x - x0) ** 2 + (y - y0) ** 2) / (2 * sigma**2))
+        kernel = np.exp(
+            -((x - x0) ** 2 + (y - y0) ** 2) / (2 * sigma**2)
+        )
     elif htype == "Cauchy":
-        g = sigma / (((x - x0) ** 2 + (y - y0) ** 2 + sigma**2) ** 1.5)
+        kernel = sigma / (
+            ((x - x0) ** 2 + (y - y0) ** 2 + sigma**2) ** 1.5
+        )
+    else:
+        raise ValueError(f"Unsupported heatmap type: {htype}")
 
-    # Usable gaussian range
-    g_x = max(0, -ul[0]), min(br[0], img.shape[1]) - ul[0]
-    g_y = max(0, -ul[1]), min(br[1], img.shape[0]) - ul[1]
-    # Image range
-    img_x = max(0, ul[0]), min(br[0], img.shape[1])
-    img_y = max(0, ul[1]), min(br[1], img.shape[0])
+    g_x = max(0, -ul[0]), min(br[0], width) - ul[0]
+    g_y = max(0, -ul[1]), min(br[1], height) - ul[1]
 
-    img[img_y[0] : img_y[1], img_x[0] : img_x[1]] += g[g_y[0] : g_y[1], g_x[0] : g_x[1]]
-    img = img / img.max()  # normalize heatmap so it has max value of 1
-    return img
+    img_x = max(0, ul[0]), min(br[0], width)
+    img_y = max(0, ul[1]), min(br[1], height)
 
-# GazeFollow calculates AUC using original image size with GT (x,y) coordinates set to 1 and everything else as 0
-# References:
-    # https://github.com/ejcgt/attention-target-detection/blob/acd264a3c9e6002b71244dea8c1873e5c5818500/eval_on_gazefollow.py#L78
-    # https://github.com/ejcgt/attention-target-detection/blob/acd264a3c9e6002b71244dea8c1873e5c5818500/utils/imutils.py#L67
-    # https://github.com/ejcgt/attention-target-detection/blob/acd264a3c9e6002b71244dea8c1873e5c5818500/utils/evaluation.py#L7
-def gazefollow_auc(heatmap, gt_gazex, gt_gazey, height, width):
-    target_map = np.zeros((height, width))
-    for point in zip(gt_gazex, gt_gazey):
-        if point[0] >= 0:
-            x, y = map(int, [point[0]*float(width), point[1]*float(height)])
-            x = min(x, width - 1)
-            y = min(y, height - 1)
-            target_map[y, x] = 1
-    resized_heatmap = torch.nn.functional.interpolate(heatmap.unsqueeze(dim=0).unsqueeze(dim=0), (height, width), mode='bilinear').squeeze()
-    auc = roc_auc_score(target_map.flatten(), resized_heatmap.cpu().flatten())
-    
-    return auc
+    heatmap[
+        img_y[0] : img_y[1],
+        img_x[0] : img_x[1],
+    ] += torch.from_numpy(
+        kernel[g_y[0] : g_y[1], g_x[0] : g_x[1]]
+    ).float()
 
-# Reference: https://github.com/ejcgt/attention-target-detection/blob/acd264a3c9e6002b71244dea8c1873e5c5818500/eval_on_gazefollow.py#L81
-def gazefollow_l2(heatmap, gt_gazex, gt_gazey):
+    max_value = heatmap.max()
+    if max_value > 0:
+        heatmap = heatmap / max_value
+
+    return heatmap
+
+
+def _safe_auc(target_map: np.ndarray, score_map: np.ndarray) -> float:
+    target = target_map.flatten()
+    score = score_map.flatten()
+
+    if len(np.unique(target)) < 2:
+        return float("nan")
+
+    return float(roc_auc_score(target, score))
+
+
+def gazefollow_auc(
+    heatmap: Tensor,
+    gt_gazex: Sequence[float],
+    gt_gazey: Sequence[float],
+    height: int,
+    width: int,
+) -> float:
+    target_map = np.zeros((height, width), dtype=np.float32)
+
+    for x_norm, y_norm in zip(gt_gazex, gt_gazey):
+        if x_norm < 0 or y_norm < 0:
+            continue
+
+        x = int(x_norm * float(width))
+        y = int(y_norm * float(height))
+
+        x = min(max(x, 0), width - 1)
+        y = min(max(y, 0), height - 1)
+
+        target_map[y, x] = 1.0
+
+    resized_heatmap = torch.nn.functional.interpolate(
+        heatmap.unsqueeze(0).unsqueeze(0),
+        size=(height, width),
+        mode="bilinear",
+        align_corners=False,
+    ).squeeze()
+
+    score_map = resized_heatmap.detach().cpu().numpy()
+    return _safe_auc(target_map, score_map)
+
+
+def gazefollow_l2(
+    heatmap: Tensor,
+    gt_gazex: Sequence[float],
+    gt_gazey: Sequence[float],
+) -> Tuple[float, float]:
     argmax = heatmap.flatten().argmax().item()
-    pred_y, pred_x = np.unravel_index(argmax, (heatmap.shape[0], heatmap.shape[1]))
+    pred_y, pred_x = np.unravel_index(
+        argmax,
+        (heatmap.shape[0], heatmap.shape[1]),
+    )
+
     pred_x = pred_x / float(heatmap.shape[1])
     pred_y = pred_y / float(heatmap.shape[0])
 
-    gazex = np.array(gt_gazex)
-    gazey = np.array(gt_gazey)
+    gazex = np.asarray(gt_gazex, dtype=np.float32)
+    gazey = np.asarray(gt_gazey, dtype=np.float32)
 
-    avg_l2 = np.sqrt((pred_x - gazex.mean())**2 + (pred_y - gazey.mean())**2)
-    all_l2s = np.sqrt((pred_x - gazex)**2 + (pred_y - gazey)**2)
+    valid = (gazex >= 0) & (gazey >= 0)
+    gazex = gazex[valid]
+    gazey = gazey[valid]
+
+    if len(gazex) == 0:
+        return float("nan"), float("nan")
+
+    avg_l2 = np.sqrt(
+        (pred_x - gazex.mean()) ** 2 + (pred_y - gazey.mean()) ** 2
+    )
+
+    all_l2s = np.sqrt((pred_x - gazex) ** 2 + (pred_y - gazey) ** 2)
     min_l2 = all_l2s.min().item()
 
-    return avg_l2, min_l2
+    return float(avg_l2), float(min_l2)
 
-# VideoAttentionTarget calculates AUC on 64x64 heatmap, defining a rectangular tolerance region of 6*(sigma=3) + 1 (uses 2D Gaussian code but binary thresholds > 0 resulting in rectangle)
-# References:
-    # https://github.com/ejcgt/attention-target-detection/blob/acd264a3c9e6002b71244dea8c1873e5c5818500/eval_on_videoatttarget.py#L106
-    # https://github.com/ejcgt/attention-target-detection/blob/acd264a3c9e6002b71244dea8c1873e5c5818500/utils/imutils.py#L31
-def vat_auc(heatmap, gt_gazex, gt_gazey):
-    res = 64
-    sigma = 3
-    assert heatmap.shape[0] == res and heatmap.shape[1] == res
-    target_map = np.zeros((res, res))
+
+def vat_auc(
+    heatmap: Tensor,
+    gt_gazex: float,
+    gt_gazey: float,
+    res: int = 64,
+    sigma: int = 3,
+) -> float:
+    if heatmap.shape[0] != res or heatmap.shape[1] != res:
+        raise ValueError(f"Expected heatmap shape ({res}, {res}), got {heatmap.shape}")
+
+    target_map = np.zeros((res, res), dtype=np.float32)
+
     gazex = gt_gazex * res
     gazey = gt_gazey * res
-    ul = [max(0, int(gazex - 3 * sigma)), max(0, int(gazey - 3 * sigma))]
-    br = [min(int(gazex + 3 * sigma + 1), res-1), min(int(gazey + 3 * sigma + 1), res-1)]
-    target_map[ul[1]:br[1], ul[0]:br[0]] = 1
-    auc = roc_auc_score(target_map.flatten(), heatmap.cpu().flatten())
-    return auc
 
-# Reference: https://github.com/ejcgt/attention-target-detection/blob/acd264a3c9e6002b71244dea8c1873e5c5818500/eval_on_videoatttarget.py#L118
-def vat_l2(heatmap, gt_gazex, gt_gazey):
+    ul = [
+        max(0, int(gazex - 3 * sigma)),
+        max(0, int(gazey - 3 * sigma)),
+    ]
+    br = [
+        min(int(gazex + 3 * sigma + 1), res),
+        min(int(gazey + 3 * sigma + 1), res),
+    ]
+
+    target_map[ul[1] : br[1], ul[0] : br[0]] = 1.0
+
+    score_map = heatmap.detach().cpu().numpy()
+    return _safe_auc(target_map, score_map)
+
+
+def vat_l2(
+    heatmap: Tensor,
+    gt_gazex: float,
+    gt_gazey: float,
+    res: int = 64,
+) -> float:
     argmax = heatmap.flatten().argmax().item()
-    pred_y, pred_x = np.unravel_index(argmax, (64, 64))
-    pred_x = pred_x / 64.
-    pred_y = pred_y / 64.
+    pred_y, pred_x = np.unravel_index(argmax, (res, res))
 
-    l2 = np.sqrt((pred_x - gt_gazex)**2 + (pred_y - gt_gazey)**2)
+    pred_x = pred_x / float(res)
+    pred_y = pred_y / float(res)
 
-    return l2
-
-from PIL import Image
-import numpy as np
-
-def random_crop_with_depth(img, depth_img, bbox, gazex, gazey, inout, scale=0.9):
-    """
-    同时裁剪 RGB 图和深度图
-    """
-    w, h = img.size
-    new_w, new_h = int(scale * w), int(scale * h)
-    if new_w >= w or new_h >= h:
-        return img, depth_img, bbox, gazex, gazey
-
-    x0 = np.random.randint(0, w - new_w + 1)
-    y0 = np.random.randint(0, h - new_h + 1)
-
-    # 裁剪
-    img = img.crop((x0, y0, x0 + new_w, y0 + new_h))
-    depth_img = depth_img.crop((x0, y0, x0 + new_w, y0 + new_h))
-
-    # 更新 bbox 和 gaze
-    bbox = [max(bbox[0] - x0, 0), max(bbox[1] - y0, 0),
-            min(bbox[2] - x0, new_w), min(bbox[3] - y0, new_h)]
-    gazex = [x - x0 for x in gazex]
-    gazey = [y - y0 for y in gazey]
-
-    return img, depth_img, bbox, gazex, gazey
+    l2 = np.sqrt((pred_x - gt_gazex) ** 2 + (pred_y - gt_gazey) ** 2)
+    return float(l2)
 
 
-def horiz_flip_with_depth(img, depth_img, bbox, gazex, gazey, inout):
-    """
-    同时水平翻转 RGB 图和深度图
-    """
-    img = img.transpose(Image.FLIP_LEFT_RIGHT)
-    depth_img = depth_img.transpose(Image.FLIP_LEFT_RIGHT)
+def random_crop_with_depth(
+    image: Image.Image,
+    depth_image: Image.Image,
+    bbox: BBox,
+    gazex: Sequence[float],
+    gazey: Sequence[float],
+    inout: int,
+):
+    width, height = image.size
+    bbox_xmin, bbox_ymin, bbox_xmax, bbox_ymax = bbox
 
-    w, _ = img.size
-    bbox = [w - bbox[2], bbox[1], w - bbox[0], bbox[3]]
-    gazex = [w - x for x in gazex]
+    if inout:
+        crop_xmin = min(bbox_xmin, min(gazex))
+        crop_ymin = min(bbox_ymin, min(gazey))
+        crop_xmax = max(bbox_xmax, max(gazex))
+        crop_ymax = max(bbox_ymax, max(gazey))
+    else:
+        crop_xmin = bbox_xmin
+        crop_ymin = bbox_ymin
+        crop_xmax = bbox_xmax
+        crop_ymax = bbox_ymax
 
-    return img, depth_img, bbox, gazex, gazey
+    crop_xmin = max(0, int(crop_xmin))
+    crop_ymin = max(0, int(crop_ymin))
+    crop_xmax = min(width, int(crop_xmax))
+    crop_ymax = min(height, int(crop_ymax))
+
+    left = random.randint(0, crop_xmin)
+    top = random.randint(0, crop_ymin)
+    right = random.randint(crop_xmax, width)
+    bottom = random.randint(crop_ymax, height)
+
+    image = TF.crop(image, top, left, bottom - top, right - left)
+    depth_image = TF.crop(depth_image, top, left, bottom - top, right - left)
+
+    bbox = [
+        bbox_xmin - left,
+        bbox_ymin - top,
+        bbox_xmax - left,
+        bbox_ymax - top,
+    ]
+
+    gazex = [x - left for x in gazex]
+    gazey = [y - top for y in gazey]
+
+    return image, depth_image, bbox, gazex, gazey
 
 
+def horiz_flip_with_depth(
+    image: Image.Image,
+    depth_image: Image.Image,
+    bbox: BBox,
+    gazex: Sequence[float],
+    gazey: Sequence[float],
+    inout: int,
+):
+    width, _ = image.size
+
+    image = TF.hflip(image)
+    depth_image = TF.hflip(depth_image)
+
+    xmin, ymin, xmax, ymax = bbox
+    bbox = [width - xmax, ymin, width - xmin, ymax]
+
+    if inout:
+        gazex = [width - x for x in gazex]
+
+    return image, depth_image, bbox, gazex, gazey

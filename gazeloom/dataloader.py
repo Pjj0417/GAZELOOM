@@ -1,329 +1,244 @@
-# import torch
-# import json
-# import os
-# import copy
-# from PIL import Image
-# import numpy as np
-
-# import gazelle.utils as utils
-
-# def load_data_vat(file, sample_rate):
-#     sequences = json.load(open(file, "r"))
-#     data = []
-#     for i in range(len(sequences)):
-#         for j in range(0, len(sequences[i]['frames']), sample_rate):
-#             data.append(sequences[i]['frames'][j])
-#     return data
-
-
-# def load_data_gazefollow(file):
-#     data = json.load(open(file, "r"))
-#     return data
-
-
-# class GazeDataset(torch.utils.data.dataset.Dataset):
-#     def __init__(self, dataset_name, path, split, transform, in_frame_only=True, sample_rate=1):
-#         self.dataset_name = dataset_name
-#         self.path = path
-#         self.split = split
-#         self.aug = self.split == "train"
-#         self.transform = transform
-#         self.in_frame_only = in_frame_only
-#         self.sample_rate = sample_rate
-        
-#         if dataset_name == "gazefollow":
-#             self.data = load_data_gazefollow(os.path.join(self.path, "{}_preprocessed.json".format(split)))
-#         elif dataset_name == "videoattentiontarget":
-#             self.data = load_data_vat(os.path.join(self.path, "{}_preprocessed.json".format(split)), sample_rate=sample_rate)
-#         else:
-#             raise ValueError("Invalid dataset: {}".format(dataset_name))
-
-#         self.data_idxs = []
-#         for i in range(len(self.data)):
-#             for j in range(len(self.data[i]['heads'])):
-#                 if not self.in_frame_only or self.data[i]['heads'][j]['inout'] == 1:
-#                     self.data_idxs.append((i, j))
-
-#     def __getitem__(self, idx):
-#         img_idx, head_idx = self.data_idxs[idx]
-#         img_data = self.data[img_idx]
-#         head_data = copy.deepcopy(img_data['heads'][head_idx])
-#         bbox_norm = head_data['bbox_norm']
-#         gazex_norm = head_data['gazex_norm']
-#         gazey_norm = head_data['gazey_norm']
-#         inout = head_data['inout']
-
-
-#         img_path = os.path.join(self.path, img_data['path'])
-#         img = Image.open(img_path)
-#         img = img.convert("RGB")
-#         width, height = img.size
-
-#         if self.aug:
-#             bbox = head_data['bbox']
-#             gazex = head_data['gazex']
-#             gazey = head_data['gazey']
-
-#             if np.random.sample() <= 0.5:
-#                 img, bbox, gazex, gazey = utils.random_crop(img, bbox, gazex, gazey, inout)
-#             if np.random.sample() <= 0.5:
-#                 img, bbox, gazex, gazey = utils.horiz_flip(img, bbox, gazex, gazey, inout)
-#             if np.random.sample() <= 0.5:
-#                 bbox = utils.random_bbox_jitter(img, bbox)
-
-#             # update width and height and re-normalize
-#             width, height = img.size
-#             bbox_norm = [bbox[0] / width, bbox[1] / height, bbox[2] / width, bbox[3] / height]
-#             gazex_norm = [x / float(width) for x in gazex]
-#             gazey_norm = [y / float(height) for y in gazey]
-        
-#         img = self.transform(img)
-        
-#         if self.split == "train":
-#             heatmap = utils.get_heatmap(gazex_norm[0], gazey_norm[0], 64, 64) # note for training set, there is only one annotation
-#             return img, bbox_norm, gazex_norm, gazey_norm, torch.tensor(inout), height, width, heatmap
-#         else:
-#             return img, bbox_norm, gazex_norm, gazey_norm, torch.tensor(inout), height, width
-
-#     def __len__(self):
-#         return len(self.data_idxs)
-
-
-# def collate_fn(batch):
-#     transposed = list(zip(*batch))
-#     return tuple(
-#         torch.stack(items) if isinstance(items[0], torch.Tensor) else list(items)
-#         for items in transposed
-#     )
-
-# import torch
-# import json
-# import os
-# import copy
-# from PIL import Image
-# import numpy as np
-
-# import gazelle.utils as utils
-
-# def load_data_vat(file, sample_rate):
-#     sequences = json.load(open(file, "r"))
-#     data = []
-#     for i in range(len(sequences)):
-#         for j in range(0, len(sequences[i]['frames']), sample_rate):
-#             data.append(sequences[i]['frames'][j])
-#     return data
-
-# def load_data_gazefollow(file):
-#     data = json.load(open(file, "r"))
-#     return data
-
-# class GazeDataset(torch.utils.data.dataset.Dataset):
-#     def __init__(self, dataset_name, path, split, transform, in_frame_only=True, sample_rate=1):
-#         self.dataset_name = dataset_name
-#         self.path = path
-#         self.split = split
-#         self.aug = self.split == "train"
-#         self.transform = transform
-#         self.in_frame_only = in_frame_only
-#         self.sample_rate = sample_rate
-        
-#         if dataset_name == "gazefollow":
-#             self.data = load_data_gazefollow(os.path.join(self.path, "{}_preprocessed.json".format(split)))
-#         elif dataset_name == "videoattentiontarget":
-#             self.data = load_data_vat(os.path.join(self.path, "{}_preprocessed.json".format(split)), sample_rate=sample_rate)
-#         else:
-#             raise ValueError("Invalid dataset: {}".format(dataset_name))
-
-#         self.data_idxs = []
-#         for i in range(len(self.data)):
-#             for j in range(len(self.data[i]['heads'])):
-#                 if not self.in_frame_only or self.data[i]['heads'][j]['inout'] == 1:
-#                     self.data_idxs.append((i, j))
-
-#     def __getitem__(self, idx):
-#         img_idx, head_idx = self.data_idxs[idx]
-#         img_data = self.data[img_idx]
-#         head_data = copy.deepcopy(img_data['heads'][head_idx])
-#         bbox_norm = head_data['bbox_norm']
-#         gazex_norm = head_data['gazex_norm']
-#         gazey_norm = head_data['gazey_norm']
-#         inout = head_data['inout']
-
-#         # 图像路径，存储在 'gazefollow' 文件夹中
-#         img_path = os.path.join(self.path, img_data['path'])
-#         img = Image.open(img_path)
-#         img = img.convert("RGB")
-#         width, height = img.size
-
-#         if self.aug:
-#             bbox = head_data['bbox']
-#             gazex = head_data['gazex']
-#             gazey = head_data['gazey']
-
-#             if np.random.sample() <= 0.5:
-#                 img, bbox, gazex, gazey = utils.random_crop(img, bbox, gazex, gazey, inout)
-#             if np.random.sample() <= 0.5:
-#                 img, bbox, gazex, gazey = utils.horiz_flip(img, bbox, gazex, gazey, inout)
-#             if np.random.sample() <= 0.5:
-#                 bbox = utils.random_bbox_jitter(img, bbox)
-
-#             # 更新宽度和高度并重新归一化
-#             width, height = img.size
-#             bbox_norm = [bbox[0] / width, bbox[1] / height, bbox[2] / width, bbox[3] / height]
-#             gazex_norm = [x / float(width) for x in gazex]
-#             gazey_norm = [y / float(height) for y in gazey]
-        
-#         img = self.transform(img)
-        
-#         if self.split == "train":
-#             heatmap = utils.get_heatmap(gazex_norm[0], gazey_norm[0], 64, 64)  # 注意训练集只有一个标注
-#             return img, bbox_norm, gazex_norm, gazey_norm, torch.tensor(inout), height, width, heatmap
-#         else:
-#             return img, bbox_norm, gazex_norm, gazey_norm, torch.tensor(inout), height, width
-
-#     def __len__(self):
-#         return len(self.data_idxs)
-
-# def collate_fn(batch):
-#     transposed = list(zip(*batch))
-#     return tuple(
-#         torch.stack(items) if isinstance(items[0], torch.Tensor) else list(items)
-#         for items in transposed
-#     )
-
-
-# 改变后的
-# 深度图和RGB都增强
-import torch
+import copy
 import json
 import os
-import copy
-from PIL import Image
+from pathlib import Path
+from typing import Any, Dict, List, Sequence, Tuple
+
 import numpy as np
+import torch
 import torchvision.transforms as transforms
+from PIL import Image
 
-import gazelle.utils as utils
+import gazeloom.utils as utils
 
 
-def load_data_vat(file, sample_rate):
-    sequences = json.load(open(file, "r"))
+def load_data_vat(file_path: str, sample_rate: int = 1) -> List[Dict[str, Any]]:
+    with open(file_path, "r", encoding="utf-8") as f:
+        sequences = json.load(f)
+
     data = []
-    for i in range(len(sequences)):
-        for j in range(0, len(sequences[i]['frames']), sample_rate):
-            data.append(sequences[i]['frames'][j])
+    for sequence in sequences:
+        frames = sequence["frames"]
+        for idx in range(0, len(frames), sample_rate):
+            data.append(frames[idx])
+
     return data
 
 
-def load_data_gazefollow(file):
-    return json.load(open(file, "r"))
+def load_data_gazefollow(file_path: str) -> List[Dict[str, Any]]:
+    with open(file_path, "r", encoding="utf-8") as f:
+        return json.load(f)
 
 
-class GazeDataset(torch.utils.data.dataset.Dataset):
-    def __init__(self, dataset_name, path, split, transform,
-                 in_frame_only=True, sample_rate=1, resize=(256, 256)):
-        self.dataset_name = dataset_name
-        self.path = path
+class GazeDataset(torch.utils.data.Dataset):
+    def __init__(
+        self,
+        dataset_name: str,
+        path: str,
+        split: str,
+        transform,
+        in_frame_only: bool = True,
+        sample_rate: int = 1,
+        depth_resize: Tuple[int, int] = (256, 256),
+        heatmap_size: Tuple[int, int] = (64, 64),
+    ) -> None:
+        super().__init__()
+
+        self.dataset_name = dataset_name.lower()
+        self.path = Path(path)
         self.split = split
-        self.aug = self.split == "train"
         self.transform = transform
-        self.resize = resize  # 深度图 resize 尺寸
         self.in_frame_only = in_frame_only
         self.sample_rate = sample_rate
+        self.depth_resize = depth_resize
+        self.heatmap_size = heatmap_size
+        self.aug = split == "train"
 
-        # 加载数据
-        if dataset_name == "gazefollow":
-            self.data = load_data_gazefollow(
-                os.path.join(self.path, f"{split}_preprocessed.json")
-            )
-        elif dataset_name == "videoattentiontarget":
-            self.data = load_data_vat(
-                os.path.join(self.path, f"{split}_preprocessed.json"),
-                sample_rate=sample_rate
-            )
-        else:
-            raise ValueError(f"Invalid dataset: {dataset_name}")
+        self.depth_transform = transforms.ToTensor()
 
-        # 构建索引
-        self.data_idxs = []
-        for i in range(len(self.data)):
-            for j in range(len(self.data[i]['heads'])):
-                if not self.in_frame_only or self.data[i]['heads'][j]['inout'] == 1:
-                    self.data_idxs.append((i, j))
+        self.data = self._load_annotations()
+        self.data_idxs = self._build_index()
 
-    def __getitem__(self, idx):
-        img_idx, head_idx = self.data_idxs[idx]
-        img_data = self.data[img_idx]
-        head_data = copy.deepcopy(img_data['heads'][head_idx])
+    def _load_annotations(self) -> List[Dict[str, Any]]:
+        annotation_file = self.path / f"{self.split}_preprocessed.json"
 
-        bbox_norm = head_data['bbox_norm']
-        gazex_norm = head_data['gazex_norm']
-        gazey_norm = head_data['gazey_norm']
-        inout = head_data['inout']
+        if self.dataset_name == "gazefollow":
+            return load_data_gazefollow(str(annotation_file))
 
-        # ---- 加载 RGB 图 ----
-        img_path = os.path.join(self.path, "gazefollow", img_data['path'])
-        img = Image.open(img_path).convert("RGB")
-        width, height = img.size
+        if self.dataset_name == "videoattentiontarget":
+            return load_data_vat(str(annotation_file), sample_rate=self.sample_rate)
 
-        # ---- 加载深度图 ----
-        depth_img_path = os.path.join(self.path, "depth", img_data['path'])
-        depth_img = Image.open(depth_img_path).convert("L")
+        raise ValueError(f"Invalid dataset name: {self.dataset_name}")
+
+    def _build_index(self) -> List[Tuple[int, int]]:
+        data_idxs = []
+
+        for image_idx, image_data in enumerate(self.data):
+            for head_idx, head_data in enumerate(image_data["heads"]):
+                inout = head_data["inout"]
+
+                if self.in_frame_only and inout != 1:
+                    continue
+
+                data_idxs.append((image_idx, head_idx))
+
+        return data_idxs
+
+    def _get_image_path(self, relative_path: str) -> Path:
+        return self.path / self.dataset_name / relative_path
+
+    def _get_depth_path(self, relative_path: str) -> Path:
+        return self.path / "depth" / relative_path
+
+    def _load_rgb_image(self, relative_path: str) -> Image.Image:
+        image_path = self._get_image_path(relative_path)
+
+        if not image_path.exists():
+            raise FileNotFoundError(f"Image file not found: {image_path}")
+
+        return Image.open(image_path).convert("RGB")
+
+    def _load_depth_image(self, relative_path: str) -> Image.Image:
+        depth_path = self._get_depth_path(relative_path)
+
+        if not depth_path.exists():
+            raise FileNotFoundError(f"Depth file not found: {depth_path}")
+
+        return Image.open(depth_path).convert("L")
+
+    def __getitem__(self, idx: int):
+        image_idx, head_idx = self.data_idxs[idx]
+
+        image_data = self.data[image_idx]
+        head_data = copy.deepcopy(image_data["heads"][head_idx])
+
+        relative_path = image_data["path"]
+
+        image = self._load_rgb_image(relative_path)
+        depth_image = self._load_depth_image(relative_path)
+
+        width, height = image.size
+
+        bbox_norm = head_data["bbox_norm"]
+        gazex_norm = head_data["gazex_norm"]
+        gazey_norm = head_data["gazey_norm"]
+        inout = head_data["inout"]
 
         if self.aug:
-            bbox = head_data['bbox']
-            gazex = head_data['gazex']
-            gazey = head_data['gazey']
-
-            # 同步裁剪
-            if np.random.rand() <= 0.5:
-                img, depth_img, bbox, gazex, gazey = utils.random_crop_with_depth(
-                    img, depth_img, bbox, gazex, gazey, inout
+            image, depth_image, bbox_norm, gazex_norm, gazey_norm, width, height = (
+                self._apply_train_augmentation(
+                    image=image,
+                    depth_image=depth_image,
+                    head_data=head_data,
+                    inout=inout,
                 )
+            )
 
-            # 同步翻转
-            if np.random.rand() <= 0.5:
-                img, depth_img, bbox, gazex, gazey = utils.horiz_flip_with_depth(
-                    img, depth_img, bbox, gazex, gazey, inout
-                )
+        image_tensor = self.transform(image)
+        depth_tensor = self._process_depth(depth_image)
 
-            # bbox 抖动
-            if np.random.rand() <= 0.5:
-                bbox = utils.random_bbox_jitter(img, bbox)
+        inout_tensor = torch.tensor(inout, dtype=torch.float32)
 
-            # 更新归一化
-            width, height = img.size
-            bbox_norm = [bbox[0] / width, bbox[1] / height,
-                         bbox[2] / width, bbox[3] / height]
-            gazex_norm = [x / float(width) for x in gazex]
-            gazey_norm = [y / float(height) for y in gazey]
-
-        # ---- 转换 ----
-        img = self.transform(img)
-
-        # 🔑 确保深度图增强后统一 resize
-        depth_img = depth_img.resize(self.resize, Image.Resampling.BILINEAR)
-        depth_img = transforms.ToTensor()(depth_img)  # [1,H,W]
-
-        # ---- 返回 ----
         if self.split == "train":
-            # 注意：训练集只有一个标注
-            heatmap = utils.get_heatmap(gazex_norm[0], gazey_norm[0], 64, 64)
-            return img, depth_img, bbox_norm, gazex_norm, gazey_norm, torch.tensor(inout), height, width, heatmap
-        else:
-            return img, depth_img, bbox_norm, gazex_norm, gazey_norm, torch.tensor(inout), height, width
+            heatmap = utils.get_heatmap(
+                gazex_norm[0],
+                gazey_norm[0],
+                self.heatmap_size[0],
+                self.heatmap_size[1],
+            )
 
-    def __len__(self):
+            return (
+                image_tensor,
+                depth_tensor,
+                bbox_norm,
+                gazex_norm,
+                gazey_norm,
+                inout_tensor,
+                height,
+                width,
+                heatmap,
+            )
+
+        return (
+            image_tensor,
+            depth_tensor,
+            bbox_norm,
+            gazex_norm,
+            gazey_norm,
+            inout_tensor,
+            height,
+            width,
+        )
+
+    def _apply_train_augmentation(
+        self,
+        image: Image.Image,
+        depth_image: Image.Image,
+        head_data: Dict[str, Any],
+        inout: int,
+    ):
+        bbox = head_data["bbox"]
+        gazex = head_data["gazex"]
+        gazey = head_data["gazey"]
+
+        if np.random.rand() <= 0.5:
+            image, depth_image, bbox, gazex, gazey = utils.random_crop_with_depth(
+                image,
+                depth_image,
+                bbox,
+                gazex,
+                gazey,
+                inout,
+            )
+
+        if np.random.rand() <= 0.5:
+            image, depth_image, bbox, gazex, gazey = utils.horiz_flip_with_depth(
+                image,
+                depth_image,
+                bbox,
+                gazex,
+                gazey,
+                inout,
+            )
+
+        if np.random.rand() <= 0.5:
+            bbox = utils.random_bbox_jitter(image, bbox)
+
+        width, height = image.size
+
+        bbox_norm = [
+            bbox[0] / width,
+            bbox[1] / height,
+            bbox[2] / width,
+            bbox[3] / height,
+        ]
+
+        gazex_norm = [x / float(width) for x in gazex]
+        gazey_norm = [y / float(height) for y in gazey]
+
+        return image, depth_image, bbox_norm, gazex_norm, gazey_norm, width, height
+
+    def _process_depth(self, depth_image: Image.Image) -> torch.Tensor:
+        depth_image = depth_image.resize(
+            self.depth_resize,
+            Image.Resampling.BILINEAR,
+        )
+        return self.depth_transform(depth_image)
+
+    def __len__(self) -> int:
         return len(self.data_idxs)
 
 
-def collate_fn(batch):
-    """
-    batch: list of tuples
-    - 会把 Tensor 堆叠成 [B,...]
-    - list 保持为 list
-    """
+def collate_fn(batch: Sequence[Tuple[Any, ...]]) -> Tuple[Any, ...]:
     transposed = list(zip(*batch))
-    return tuple(
-        torch.stack(items) if isinstance(items[0], torch.Tensor) else list(items)
-        for items in transposed
-    )
+
+    output = []
+    for items in transposed:
+        first_item = items[0]
+
+        if isinstance(first_item, torch.Tensor):
+            output.append(torch.stack(items))
+        else:
+            output.append(list(items))
+
+    return tuple(output)
