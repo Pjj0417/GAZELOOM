@@ -1,213 +1,229 @@
 <div align="center">
 
-<!-- 项目 Logo -->
+# ⚡ GazeLoom ⚡
 
-<!-- 主标题 -->
-# ⚡ GazeLoom⚡
-![PP](https://github.com/user-attachments/assets/3c4055b2-9ec1-40ee-9c79-b664945336d9)
-<!-- 副标题 -->
 ### Train Driver Gaze Estimation Framework
 
-<!-- 描述 -->
-A lightweight and robust driver gaze estimation system powered by self-supervised learning and geometry guidance.
-![1478](https://github.com/user-attachments/assets/d8c383f4-6a71-4a12-8f5a-9d0b100ba8db)
+<img src="https://github.com/user-attachments/assets/3c4055b2-9ec1-40ee-9c79-b664945336d9" width="720" />
 
----
+<br/>
+
+**A lightweight and robust driver gaze estimation system powered by self-supervised learning and geometry guidance.**
+
+<img src="https://github.com/user-attachments/assets/d8c383f4-6a71-4a12-8f5a-9d0b100ba8db" width="720" />
 
 </div>
 
+---
+
 ## 🚀 About
 
-**GAZELOOM** is a driver gaze estimation framework designed for intelligent traffic safety and human-vehicle interaction.  
-By leveraging **multi-modal geometric guidance** and **self-supervised feature extraction**, it accurately predicts driver gaze points in 3D space.
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/3f2dc547-ade5-4530-8f45-9b555ceeeb4f" width="720" />
+</div>
 
-- 🔹 **Lightweight Model**: Only 4.97M parameters, suitable for resource-constrained devices  
-- 🔹 **High-Precision Estimation**: Joint prediction of head pose and eye movement  
-- 🔹 **Real-time Performance**: Adapted for in-vehicle real-time inference  
-- 🔹 **Scene Generalization**: Handles lighting changes, occlusions, and pose variations
+**GazeLoom** is a driver gaze estimation framework designed for intelligent traffic safety and human-vehicle interaction.
+
+It leverages **multi-modal geometric guidance** and **self-supervised feature extraction** to accurately predict driver gaze points in 3D space.
+
+### Highlights
+
+- 🔹 **Lightweight Model** — only **4.97M parameters**
+- 🔹 **High-Precision Estimation** — joint prediction of head pose and eye movement
+- 🔹 **Real-Time Inference** — suitable for in-vehicle edge deployment
+- 🔹 **Strong Generalization** — robust to lighting changes, occlusions, and pose variations
 
 ---
 
 ## 📸 Visuals
 
-<!-- 图片 一排展示，统一大小 -->
-<!-- 图片一排展示，统一大小（每行三张） -->
 <div align="center">
-  <!-- 第一行 -->
-  <a href="https://github.com/user-attachments/assets/c5eebd49-0aae-43ed-8f98-006f6228114c" target="_blank">
-    <img width="260" height="200" alt="图片11" src="https://github.com/user-attachments/assets/0f2ecb2d-3cd2-41ab-81fa-27e61aafe383" />
-    <img width="260" height="200" alt="图片12" src="https://github.com/user-attachments/assets/f3e91f3b-5e87-46a1-829a-327f8e3a721d" />
-    <img width="260" height="200" alt="图片13" src="https://github.com/user-attachments/assets/5be57660-463a-4003-a2a8-b5b5d1d75549" />
-  </a>
-  <br><br>
 
-  <!-- 第二行 -->
-  <a href="https://github.com/user-attachments/assets/c5eebd49-0aae-43ed-8f98-006f6228114c" target="_blank">
-    <img width="260" height="200" alt="图片5" src="https://github.com/user-attachments/assets/0fcd3faf-e1b1-49cd-8377-1191fd277ce4" />
-    <img width="260" height="200" alt="图片6" src="https://github.com/user-attachments/assets/9732d414-9a6a-4257-a961-852fca559244" />
-    <img width="260" height="200" alt="图片7" src="https://github.com/user-attachments/assets/1d4f8971-6ece-4c7a-b9c9-ca485f1a7730" />
-  </a>
-  <br><br>
+<table>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/0f2ecb2d-3cd2-41ab-81fa-27e61aafe383" width="260"/></td>
+    <td><img src="https://github.com/user-attachments/assets/f3e91f3b-5e87-46a1-829a-327f8e3a721d" width="260"/></td>
+    <td><img src="https://github.com/user-attachments/assets/5be57660-463a-4003-a2a8-b5b5d1d75549" width="260"/></td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/0fcd3faf-e1b1-49cd-8377-1191fd277ce4" width="260"/></td>
+    <td><img src="https://github.com/user-attachments/assets/9732d414-9a6a-4257-a961-852fca559244" width="260"/></td>
+    <td><img src="https://github.com/user-attachments/assets/1d4f8971-6ece-4c7a-b9c9-ca485f1a7730" width="260"/></td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/7548f741-8b97-4528-af2f-92d2100ccae1" width="260"/></td>
+    <td><img src="https://github.com/user-attachments/assets/f996580c-a005-4c7a-b511-fe9c7584b7e4" width="260"/></td>
+    <td><img src="https://github.com/user-attachments/assets/e3bead59-4718-441f-b701-2b23fa40d6dc" width="260"/></td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/8c2f4bc4-eb1f-4303-a93b-be26cd17d0f9" width="260"/></td>
+    <td><img src="https://github.com/user-attachments/assets/7302f26f-8360-4d99-9130-3180c2942869" width="260"/></td>
+    <td><img src="https://github.com/user-attachments/assets/bb47e194-9054-4cb9-9dc5-e25220f233a8" width="260"/></td>
+  </tr>
+</table>
 
-  <!-- 第三行 -->
-  <a href="https://github.com/user-attachments/assets/8662444a-d6ea-4255-92b8-175da69e1dc4" target="_blank">
-    <img width="260" height="200" alt="图片8" src="https://github.com/user-attachments/assets/7548f741-8b97-4528-af2f-92d2100ccae1" />
-    <img width="260" height="200" alt="图片9" src="https://github.com/user-attachments/assets/f996580c-a005-4c7a-b511-fe9c7584b7e4" />
-    <img width="260" height="200" alt="图片10" src="https://github.com/user-attachments/assets/e3bead59-4718-441f-b701-2b23fa40d6dc" />
-  </a>
-  <br><br>
-
-  <!-- 第四行 -->
-  <a href="https://github.com/user-attachments/assets/a5ced171-192a-4b7b-a8b3-b2b65519e4de" target="_blank">
-    <img width="260" height="200" alt="图片1" src="https://github.com/user-attachments/assets/8c2f4bc4-eb1f-4303-a93b-be26cd17d0f9" />
-    <img width="260" height="200" alt="图片2" src="https://github.com/user-attachments/assets/7302f26f-8360-4d99-9130-3180c2942869" />
-    <img width="260" height="200" alt="图片3" src="https://github.com/user-attachments/assets/bb47e194-9054-4cb9-9dc5-e25220f233a8" />
-  </a>
 </div>
 
 ---
 
 ## ✨ Key Features
 
-- 🧠 **Geometry-Guided Learning** – Combines semantic and geometric priors for robust gaze estimation  
-- ⚙️ **Self-Supervised Backbone** – Reduces dependency on labeled data  
-- 🚗 **Driver-Centric Design** – Optimized for in-cabin and driving environments  
-- ⚡ **Lightweight Deployment** – Only 4.97M parameters, real-time performance on edge devices  
+| Feature | Description |
+|---|---|
+| 🧠 Geometry-Guided Learning | Combines semantic and geometric priors for robust gaze estimation |
+| ⚙️ Self-Supervised Backbone | Reduces dependency on large-scale labeled data |
+| 🚗 Driver-Centric Design | Optimized for railway and in-cabin driving environments |
+| ⚡ Lightweight Deployment | 4.97M parameters with real-time edge inference capability |
 
 ---
 
-🧩 Overall Framework
-The proposed GazeLoom framework is a lightweight and geometry-guided approach for 3D driver gaze estimation in railway driving scenarios.
-It consists of three key stages — Feature Extraction, Geometry Guidance, and Fusion & Prediction, as illustrated in Figure 1 below.
+## 🧩 Overall Framework
+
+GazeLoom is a lightweight and geometry-guided framework for **3D driver gaze estimation** in railway driving scenarios.
+
+It consists of three key stages:
+
+1. **Feature Extraction**
+2. **Geometry Guidance**
+3. **Fusion & Prediction**
+
 <div align="center">
-  <img width="700" height="700" alt="GazeLoom Framework" src="https://github.com/user-attachments/assets/f19f31bf-c917-4ffc-bb9c-e86c726cc065" />
+  <img src="https://github.com/user-attachments/assets/f19f31bf-c917-4ffc-bb9c-e86c726cc065" width="720" />
 </div>
+
 ---
 
-### 🎯 Stage 1 — Feature Extraction
+## 🎯 Stage 1 — Feature Extraction
 
-In this stage, a **pre-trained self-supervised backbone (SimDINOv2)** is employed to encode driving scene images,  
-producing robust and discriminative **global visual representations**.  
+A pre-trained self-supervised backbone, **SimDINOv2**, is used to encode driving scene images and generate robust global visual representations.
+
 <div align="center">
-  <img width="700" height="600" alt="GazeLoom Framework" src="https://github.com/user-attachments/assets/d655e12a-ee7f-4f0e-91d0-886cc8652a70" />
+  <img src="https://github.com/user-attachments/assets/d655e12a-ee7f-4f0e-91d0-886cc8652a70" width="720" />
 </div>
-To further enhance **semantic understanding** and **spatial perception**, multiple auxiliary cues are incorporated:
-- 🌫️ **Depth Map** generated by a depth estimation network, providing 3D structural priors.  
-- ✨ **DISM Saliency Map** to highlight attention-relevant visual regions.  
-- 👤 **Head Pose Features** offering geometric priors of gaze orientation.  
 
-These multi-source features are jointly fed into the **Multi-modal Geometry Guidance (MGG)** module,  
-supporting subsequent semantic–geometric fusion and spatial structure modeling.
+To enhance semantic understanding and spatial perception, GazeLoom incorporates multiple auxiliary cues:
 
----
+- 🌫️ **Depth Map** — provides 3D structural priors
+- ✨ **DISM Saliency Map** — highlights attention-relevant visual regions
+- 👤 **Head Pose Features** — offer geometric priors of gaze orientation
 
-### 📐 Stage 2 — Geometry Guidance (MGG)
-
-The **Multi-modal Geometry Guidance (MGG)** module is designed to enhance **3D spatial reasoning** and **structural perception**.  
-It consists of two complementary sub-branches:
-
-- 🧩 **Head Branch:**  
-  Utilizes head feature maps with pseudo-heatmap supervision to explicitly model local geometric constraints of gaze direction.
-
-- 🌌 **Depth Branch:**  
-  Fuses the depth map and DISM saliency map to inject global 3D structural priors,  
-  strengthening the model’s spatial topology representation.
-
-Both branches perform complementary modeling in the semantic and geometric domains,  
-generating a **structure-consistent and discriminative visual–spatial representation** for downstream fusion and gaze prediction.
+These features are fed into the **Multi-modal Geometry Guidance module** for semantic-geometric fusion.
 
 ---
 
-### 🔗 Stage 3 — Fusion & Prediction (CGF)
+## 📐 Stage 2 — Geometry Guidance
 
-The **Cross-modal Gating Fusion (CGF)** module adaptively integrates semantic and spatial features via a **gating attention mechanism**.  
-This allows dynamic weighting of feature importance across modalities and explicit modeling of cross-modal semantic dependencies.
+The **Multi-modal Geometry Guidance module**, abbreviated as **MGG**, enhances 3D spatial reasoning and structural perception.
 
-After fusion, two parallel branches are employed:
-- 🎯 **In–Out Gaze Classification** — binary classification of whether the gaze is on-screen or off-screen.  
-- 🔥 **Gaze Heatmap Generation** — produces a spatial heatmap of the predicted gaze point.  
+### Head Branch
 
-The entire model is trained in a **multi-task joint optimization framework**,  
-achieving improved robustness, generalization, and real-time performance in diverse driving environments.
+The head branch uses head feature maps with pseudo-heatmap supervision to explicitly model local geometric constraints of gaze direction.
+
+### Depth Branch
+
+The depth branch fuses depth maps and DISM saliency maps to inject global 3D structural priors.
+
+Together, these branches generate a structure-consistent visual-spatial representation for downstream gaze prediction.
 
 ---
 
-> 🚀 *GazeLoom effectively combines self-supervised representation learning with geometry-guided fusion to achieve accurate, stable, and real-time 3D gaze estimation for railway driver monitoring.*
+## 🔗 Stage 3 — Fusion & Prediction
+
+The **Cross-modal Gating Fusion module**, abbreviated as **CGF**, adaptively integrates semantic and spatial features through a gating attention mechanism.
+
+After fusion, the model performs two prediction tasks:
+
+- 🎯 **In-Out Gaze Classification**
+- 🔥 **Gaze Heatmap Generation**
+
+The entire model is trained using a multi-task joint optimization framework, improving robustness, generalization, and real-time performance.
+
+---
 
 ## 🔍 Module Details
 
 ### 🧩 MGG — Multi-modal Geometry Guidance
-**MGG** is one of the core modules of GazeLoom, responsible for integrating geometric priors from multiple modalities to enhance robustness in complex driving conditions.
+
 <div align="center">
-  <img width="700" height="700" alt="GazeLoom Framework" src="https://github.com/user-attachments/assets/1d75adaa-3f3c-4131-9506-0fcd5337c5ba" />
+  <img src="https://github.com/user-attachments/assets/1d75adaa-3f3c-4131-9506-0fcd5337c5ba" width="720" />
 </div>
 
-- **Input Sources**: Facial landmarks, head pose, and eye-region depth features  
-- **Functions**:
-  - Builds **multi-modal geometric representations** to capture spatial relationships between facial structure and orientation  
-  - Applies **Geometry Consistency Loss** to enforce cross-modal consistency  
-  - Uses a lightweight transformer to model spatial dependencies  
+**MGG** integrates geometric priors from multiple modalities to enhance robustness under complex driving conditions.
 
-> 💡 *MGG enables GazeLoom to maintain high precision under lighting changes, head rotations, and partial occlusions.*
+#### Input Sources
+
+- Facial landmarks
+- Head pose
+- Eye-region depth features
+
+#### Core Functions
+
+- Builds multi-modal geometric representations
+- Captures spatial relationships between facial structure and orientation
+- Applies geometry consistency constraints
+- Uses a lightweight transformer to model spatial dependencies
+
+> 💡 MGG helps GazeLoom maintain high precision under lighting changes, head rotations, and partial occlusions.
 
 ---
 
 ### 🔗 CGF — Cross-modal Gating Fusion
-**CGF** introduces a **gating mechanism** that dynamically balances semantic and geometric features during fusion, ensuring optimal information flow between modalities.
+
 <div align="center">
-  <img width="400" height="700" alt="GazeLoom Framework" src="https://github.com/user-attachments/assets/ce87da76-3cdb-48eb-9fb6-aa95cef654af" />
-</div>4
-- **Mechanism**:
-  - Learns to assign adaptive weights between geometry and semantic branches  
-  - Prevents over-reliance on a single modality under extreme conditions  
-  - Jointly optimized with MGG to achieve **geometry-constrained cross-modal fusion**
-
-- **Advantages**:
-  - Improves semantic coherence and spatial continuity  
-  - Enhances generalization and stability for real-time driver monitoring  
-
-> ⚙️ *CGF strengthens inter-modal cooperation, making GazeLoom accurate and reliable in real-world in-cabin scenarios.*
-
----
-## 🧠 Architecture Overview
-
-The architecture of **GAZELOOM** is designed to efficiently estimate the 3D gaze points of the driver by integrating several key components:
-<div align="center">
-  <img width="900" height="900" alt="GazeLoom Framework" src="https://github.com/user-attachments/assets/acd7deab-6800-4aa1-a8d5-e065729dd186" />
+  <img src="https://github.com/user-attachments/assets/ce87da76-3cdb-48eb-9fb6-aa95cef654af" width="420" />
 </div>
 
-1. **Camera Input → Face Landmark → Head Pose → Eye Gaze Vector**  
-   The input from the camera is processed to extract face landmarks, head pose, and eye gaze vectors.
-   
-2. **Multi-modal Geometry Guidance**  
-   This component integrates spatial geometric priors from different sensor modalities (e.g., facial features, head orientation, and gaze vector), enhancing the model's robustness and accuracy.
+**CGF** introduces a gating mechanism to dynamically balance semantic and geometric features.
 
-3. **Cross-modal Gating Attention**  
-   Cross-modal attention mechanisms are applied to adaptively align semantic (e.g., gaze) and geometric information, optimizing the fusion of both inputs for better gaze prediction.
+#### Mechanism
 
-4. **3D Gaze Point Prediction**  
-   Finally, the processed features are used to predict the 3D gaze point, which represents the driver's point of attention in the 3D space of the vehicle environment.
+- Learns adaptive weights between geometry and semantic branches
+- Prevents over-reliance on a single modality
+- Enables geometry-constrained cross-modal fusion
+
+#### Advantages
+
+- Improves semantic coherence
+- Enhances spatial continuity
+- Strengthens generalization and stability
+
+> ⚙️ CGF improves inter-modal cooperation, making GazeLoom accurate and reliable in real-world in-cabin scenarios.
+
+---
+
+## 🧠 Architecture Overview
+
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/acd7deab-6800-4aa1-a8d5-e065729dd186" width="820" />
+</div>
+
+The GazeLoom architecture estimates 3D driver gaze points through the following pipeline:
+
+1. **Camera Input**
+2. **Face Landmark Extraction**
+3. **Head Pose Estimation**
+4. **Eye Gaze Vector Modeling**
+5. **Multi-modal Geometry Guidance**
+6. **Cross-modal Gating Fusion**
+7. **3D Gaze Point Prediction**
 
 ---
 
 ## 📊 Datasets & Results
 
-Here are the performance metrics on key datasets:
+| Dataset | AUC ↑ | L2 ↓ | AP ↑ |
+|---|:---:|:---:|:---:|
+| **GazeFollow** | **0.967** | **0.079** | - |
+| **VideoAttentionTarget** | **0.953** | **0.098** | **0.942** |
 
-| **Dataset**              | **AUC ↑** | **L2 ↓**  | **AP ↑**   |
-|--------------------------|:---------:|:---------:|:---------:|
-| **GazeFollow**            | **0.967** | **0.079**| -         |
-| **VideoAttentionTarget**  | **0.953** | **0.098** | **0.942** |
-
-> The GazeLoom model achieves high performance across multiple benchmarks with **lightweight architecture**.
+> GazeLoom achieves strong performance across multiple benchmarks while maintaining a lightweight architecture.
 
 ---
 
 ## ⚙️ Installation
 
-Clone the repository and install the necessary dependencies:
+Clone the repository:
 
 ```bash
 git clone https://github.com/yourname/GAZELOOM.git
 cd GAZELOOM
-pip install -r requirements.txt
