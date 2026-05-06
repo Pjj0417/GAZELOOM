@@ -50,6 +50,13 @@ Download the GazeFollow dataset [here](https://github.com/ejcgt/attention-target
 
 python data_prep/preprocess_gazefollow.py \
   --data_path /path/to/gazefollow/data_new
+### VideoAttentionTarget
+
+Download the VideoAttentionTarget dataset [here](https://github.com/ejcgt/attention-target-detection?tab=readme-ov-file#dataset-1).
+
+
+python data_prep/preprocess_vat.py \
+  --data_path /path/to/videoattentiontarget
 
 
 ## 📸 Visuals
