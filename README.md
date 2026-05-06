@@ -547,9 +547,10 @@ The GazeLoom architecture estimates 3D driver gaze points through the following 
 
 Clone the repository:
 
-```bash
+
 git clone https://github.com/yourname/GAZELOOM.git
 cd GAZELOOM
+
 
 
 ## 🔁 Reproducibility
