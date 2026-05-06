@@ -411,7 +411,7 @@ It consists of three key stages:
 3. **Fusion & Prediction**
 
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/f19f31bf-c917-4ffc-bb9c-e86c726cc065" width="720" />
+  <img src="https://github.com/peng86584-commits/GAZELOOM/blob/main/fig1.png?raw=true" width="720" />
 </div>
 
 ---
