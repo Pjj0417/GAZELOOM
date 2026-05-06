@@ -35,7 +35,6 @@ It leverages **multi-modal geometric guidance** and **self-supervised feature ex
 - 🚀 **ONNX Deployment** — Run `onnx.py` to export and deploy GazeLoom in ONNX format. Google Drive: [Download](https://drive.google.com/file/d/1xLQqY6gnw76jP0Xy6-sLKM07R0hgFBw8/view?usp=drive_link)
 
 ---
----
 
 
 ## 🗂️ Data Processing
@@ -73,6 +72,7 @@ Download the GOO-Real dataset [here](https://github.com/upeee/GOO-GAZE2021/blob/
 
 python data_prep/preprocess_goo_real.py \
   --data_path /path/to/goo_real
+---
 
 ## 📸 Visuals
 
