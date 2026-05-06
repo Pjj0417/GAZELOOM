@@ -32,6 +32,7 @@ It leverages **multi-modal geometric guidance** and **self-supervised feature ex
 - 🔹 **High-Precision Estimation** — joint prediction of head pose and eye movement
 - 🔹 **Real-Time Inference** — suitable for in-vehicle edge deployment
 - 🔹 **Strong Generalization** — robust to lighting changes, occlusions, and pose variations
+- 🚀 **ONNX Deployment** — Run `onnx.py` to export and deploy GazeLoom in ONNX format. Google Drive: [Download](你的Google硬盘链接)
 
 ---
 
