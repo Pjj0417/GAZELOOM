@@ -72,7 +72,7 @@ Download the GOO-Real dataset [here](https://github.com/upeee/GOO-GAZE2021/blob/
 
 python data_prep/preprocess_goo_real.py \
   --data_path /path/to/goo_real
----
+
 
 ## 📸 Visuals
 
