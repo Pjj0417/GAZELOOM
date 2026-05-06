@@ -553,6 +553,7 @@ Clone the repository:
 
 
 git clone https://github.com/yourname/GAZELOOM.git
+
 cd GAZELOOM
 ---
 
