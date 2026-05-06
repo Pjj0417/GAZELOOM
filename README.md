@@ -131,6 +131,55 @@ dataset_root/
     └── xxx.png
 ```
 
+## 🎨 Visualization
+
+We provide a visualization script in `scripts/visualize.py` for qualitative analysis of GazeLoom predictions.
+
+The script automatically detects faces using RetinaFace, predicts gaze heatmaps for each detected person, and saves the visualization results, including:
+
+- 🟧 detected head bounding boxes
+- 🔴 predicted gaze target points
+- 🟢 high-response heatmap regions
+- 📍 gaze direction lines
+- 🌈 heatmap overlay images
+- 📄 JSON prediction results
+
+### Run Visualization
+
+```bash
+python scripts/visualize.py \
+  --image_dir test \
+  --depth_dir test_depth \
+  --ckpt_path checkpoints/epoch_14.pt \
+  --model_name gazeloom_cgf_simdinov2_vitb14_inout \
+  --output_dir output
+```
+
+### Arguments
+
+| Argument | Description |
+|---|---|
+| `--image_dir` | Directory containing input images |
+| `--depth_dir` | Directory containing extracted depth maps |
+| `--ckpt_path` | Path to the trained model checkpoint |
+| `--model_name` | Model architecture used for inference |
+| `--output_dir` | Directory for saving visualization results |
+| `--inout_threshold` | Threshold for filtering out-of-frame gaze predictions |
+| `--heatmap_threshold` | Threshold for highlighting high-response gaze regions |
+
+### Output Files
+
+After running the script, results will be saved under the output directory:
+
+```text
+output/
+├── image_result.jpg
+├── image_heatmap_0.jpg
+├── image_overlay_0.jpg
+└── gaze_predictions.json
+```
+
+The generated visualizations can be used to inspect gaze direction, predicted attention targets, and model behavior under different driving scenarios.
 
 ## 📸 Visuals
 
