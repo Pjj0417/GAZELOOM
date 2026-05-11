@@ -13,6 +13,8 @@
 <img src="https://github.com/user-attachments/assets/d8c383f4-6a71-4a12-8f5a-9d0b100ba8db" width="720" />
 
 </div>
+> 🚧 The code is still under active development. You can request access from us 📩  
+> Contact: [ ]( ) or join our WeChat/DingTalk group via QR code
 
 ---
 
